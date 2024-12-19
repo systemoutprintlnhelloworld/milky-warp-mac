@@ -39,10 +39,11 @@ jobs:
         run: pnpm run tauri build
 
       - name: 创建 DMG 文件
-        uses: L-Super/create-dmg-actions@v1.0.3
-        with:
-          dmg_name: 'MilkyWarp'
-          src_dir: 'src-tauri/target/release/bundle/macos/MilkyWarp.app'
+        run: |
+          # 安装 create-dmg 工具
+          brew install create-dmg
+          # 创建 DMG 文件，跳过美化步骤
+          create-dmg --skip-jenkins --volname "MilkyWarp" src-tauri/target/release/bundle/macos/MilkyWarp.app
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v3
