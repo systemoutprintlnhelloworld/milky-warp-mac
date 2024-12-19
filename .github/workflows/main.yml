@@ -38,27 +38,19 @@ jobs:
       - name: 构建 Tauri 应用
         run: pnpm run tauri build
 
-      - name: 提取标签名称
-        id: extract_tag
-        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      - name: 创建 DMG 文件
+        run: |
+          # 安装 create-dmg 工具
+          brew install create-dmg
+          # 创建 DMG 文件，指定输出文件名和源文件夹路径
+          create-dmg \
+            --volname "MilkyWarp" \
+            --skip-jenkins \
+            MilkyWarp.dmg \
+            src-tauri/target/release/bundle/macos/MilkyWarp.app
 
-      - name: 创建 GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v3
         with:
-          tag_name: ${{ env.TAG_NAME }}
-          release_name: Release ${{ env.TAG_NAME }}
-          draft: false
-          prerelease: false
-
-      - name: 上传 DMG 到 Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./MilkyWarp.dmg
-          asset_name: MilkyWarp.dmg
-          asset_content_type: application/x-apple-diskimage
+          name: MilkyWarp.dmg
+          path: MilkyWarp.dmg
