@@ -46,8 +46,8 @@ jobs:
           create-dmg \
             --volname "MilkyWarp" \
             --skip-jenkins \
-            src-tauri/target/release/bundle/macos/MilkyWarp.app \
-            MilkyWarp.dmg
+            MilkyWarp.dmg \
+            src-tauri/target/release/bundle/macos/MilkyWarp.app
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v3
