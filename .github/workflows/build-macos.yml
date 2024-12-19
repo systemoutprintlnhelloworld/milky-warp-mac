@@ -1,0 +1,51 @@
+name: Build and Release macOS DMG
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # 当推送符合此模式的标签时触发
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # 或您项目所需的其他版本
+
+      - name: 安装 pnpm
+        run: npm install -g pnpm
+
+      - name: 安装项目依赖
+        run: pnpm install
+
+      - name: 设置 Rust 环境
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
+      - name: 安装 Tauri CLI
+        run: cargo install tauri-cli
+
+      - name: 构建 Tauri 应用
+        run: pnpm run tauri build
+
+      - name: 创建 DMG 文件
+        uses: L-Super/create-dmg-actions@v1.0.3
+        with:
+          dmg_name: 'MilkyWarp'
+          src_dir: 'src-tauri/target/release/bundle/macos/MilkyWarp.app'
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v3
+        with:
+          name: MilkyWarp.dmg
+          path: MilkyWarp.dmg
