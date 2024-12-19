@@ -42,8 +42,12 @@ jobs:
         run: |
           # 安装 create-dmg 工具
           brew install create-dmg
-          # 创建 DMG 文件，跳过美化步骤
-          create-dmg --skip-jenkins --volname "MilkyWarp" src-tauri/target/release/bundle/macos/MilkyWarp.app
+          # 创建 DMG 文件，指定输出文件名和源文件夹路径
+          create-dmg \
+            --volname "MilkyWarp" \
+            --skip-jenkins \
+            src-tauri/target/release/bundle/macos/MilkyWarp.app \
+            MilkyWarp.dmg
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v3
