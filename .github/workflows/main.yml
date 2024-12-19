@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - 'v*.*.*'  # 当推送符合此模式的标签时触发
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
@@ -49,8 +49,23 @@ jobs:
             MilkyWarp.dmg \
             src-tauri/target/release/bundle/macos/MilkyWarp.app
 
-      - name: 上传构建产物
-        uses: actions/upload-artifact@v3
+      - name: 创建 GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
         with:
-          name: MilkyWarp.dmg
-          path: MilkyWarp.dmg
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 上传 DMG 到 Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./MilkyWarp.dmg
+          asset_name: MilkyWarp.dmg
+          asset_content_type: application/x-apple-diskimage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
