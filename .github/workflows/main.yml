@@ -17,7 +17,7 @@ jobs:
       - name: 设置 Node.js 环境
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # 或您项目所需的其他版本
+          node-version: '18.12'  # 指定 Node.js 版本
 
       - name: 安装 pnpm
         run: npm install -g pnpm
